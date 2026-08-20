@@ -1,5 +1,5 @@
 'use client'
-import { useState, FormEvent } from 'react'
+import { useState, useEffect, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import styles from './LoginPage.module.css'
@@ -11,6 +11,11 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPass, setShowPass] = useState(false)
+
+  // Clear any existing active session so login requires explicit authentication every time
+  useEffect(() => {
+    fetch('/api/v1/auth', { method: 'DELETE' }).catch(() => {})
+  }, [])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -40,10 +45,10 @@ export default function LoginPage() {
       <div className={styles.bg} />
       <div className={styles.card}>
         <div className={styles.logoWrap}>
-          <Image src="/images/logo-hmmj.png" alt="Logo HMMJ" width={72} height={72} className={styles.logo} />
+          <Image src="/images/logo-hmmj.png" alt="Logo HMMJTM" width={72} height={72} className={styles.logo} />
         </div>
         <h1 className={styles.title}>Masuk Dashboard</h1>
-        <p className={styles.sub}>HMMJ Teknik Mesin — Universitas Bung Hatta</p>
+        <p className={styles.sub}>HMMJTM Teknik Mesin — Universitas Bung Hatta</p>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>

@@ -18,7 +18,7 @@ export async function signToken(payload: Omit<AuthPayload, keyof JWTPayload>): P
   return new SignJWT(payload as JWTPayload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('7d')
+    .setExpirationTime('2h') // 2 hour session duration
     .sign(SECRET)
 }
 
@@ -56,8 +56,8 @@ export function isAdminOrDeveloper(auth: AuthPayload | null): boolean {
 export const COOKIE_OPTIONS = {
   name: COOKIE_NAME,
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  secure: false, // Allows cookies on localhost, tunnels, and HTTPS without browser drop
   sameSite: 'lax' as const,
-  maxAge: 60 * 60 * 24 * 7, // 7 days
+  maxAge: 60 * 60 * 2, // 2 hours
   path: '/',
 }
