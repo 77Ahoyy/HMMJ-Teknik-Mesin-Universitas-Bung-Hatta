@@ -1,0 +1,307 @@
+.page {
+  min-height: 100vh;
+  padding-top: calc(var(--nav-height) + 60px);
+  padding-bottom: 80px;
+  position: relative;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(circle at 30% 40%, rgba(201,168,76,0.06) 0%, transparent 60%), var(--color-bg);
+}
+
+.inner { position: relative; z-index: 1; }
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: all var(--transition);
+  margin-bottom: 2rem;
+  padding: 8px 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--radius-full);
+}
+
+.backBtn:hover {
+  background: var(--color-surface-2);
+  border-color: var(--color-primary);
+  transform: translateX(-4px);
+}
+
+.card {
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  gap: 3.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-2);
+  border-radius: 28px;
+  padding: 3rem;
+  max-width: 900px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+}
+
+.photoSide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* ========================================================
+   FOTO PERSEGI 4 (SQUARE / PORTRAIT RECTANGLE)
+   ======================================================== */
+.photoSquareWrap {
+  position: relative;
+  width: 100%;
+  max-width: 270px;
+  height: 330px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface-2);
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: transform 400ms ease, box-shadow 400ms ease, border-color 300ms ease;
+}
+
+.photoSquareWrap:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primary);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(201, 168, 76, 0.25);
+}
+
+.photoSquare {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 600ms ease;
+}
+
+.photoSquareWrap:hover .photoSquare {
+  transform: scale(1.05);
+}
+
+.photoHoverOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 22, 40, 0.65);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  z-index: 2;
+}
+
+.photoSquareWrap:hover .photoHoverOverlay {
+  opacity: 1;
+}
+
+.zoomIcon { font-size: 1.6rem; }
+.zoomText {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(201, 168, 76, 0.9);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+.photoBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(10, 22, 40, 0.85);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(4px);
+}
+
+.igBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 270px;
+  padding: 11px 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all var(--transition);
+  box-shadow: 0 4px 16px rgba(131,58,180,0.3);
+}
+
+.igBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(131,58,180,0.45);
+}
+
+.infoSide { display: flex; flex-direction: column; gap: 1rem; }
+
+.tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-primary);
+  background: var(--color-primary-dim);
+  border: 1px solid var(--color-border);
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  align-self: flex-start;
+}
+
+.name {
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.jabatan {
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.details { display: flex; flex-direction: column; gap: 0; }
+
+.detailRow {
+  display: flex;
+  gap: 1.25rem;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--color-border-2);
+}
+
+.detailRow:last-child { border-bottom: none; }
+
+.detailLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  min-width: 110px;
+  flex-shrink: 0;
+}
+
+.detailValue { font-size: 0.92rem; color: var(--color-text); font-weight: 500; }
+.period { color: var(--color-primary); font-weight: 700; }
+
+/* ========================================================
+   LIGHTBOX MODAL FOR FULL-SIZE PHOTO VIEWING
+   ======================================================== */
+.lightboxOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 200ms ease;
+}
+
+.lightboxContent {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInUp 250ms ease;
+}
+
+.lightboxCloseBtn {
+  position: absolute;
+  top: -45px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.lightboxCloseBtn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.lightboxImage {
+  max-width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
+  border: 2px solid var(--color-border);
+}
+
+.lightboxCaption {
+  margin-top: 1rem;
+  text-align: center;
+  color: white;
+}
+
+.lightboxCaption h4 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.lightboxCaption p {
+  font-size: 0.82rem;
+  color: var(--color-primary);
+  margin-bottom: 6px;
+}
+
+.lightboxDirectLink {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: underline;
+  transition: color var(--transition);
+}
+
+.lightboxDirectLink:hover {
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .card { grid-template-columns: 1fr; gap: 2rem; padding: 2rem; }
+  .photoSide { width: 100%; }
+  .photoSquareWrap { max-width: 100%; height: 360px; }
+  .igBtn { max-width: 100%; }
+}

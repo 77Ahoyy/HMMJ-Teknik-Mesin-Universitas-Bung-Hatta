@@ -1,0 +1,18 @@
+[
+  {
+    "id": "usr-dev",
+    "username": "Syahrul",
+    "password_hash": "$2a$10$PNdjTebC4QVoqpINeoLjee8Fcup8Q1wN7GQ9OWp.9YVAMZYdV/p0.",
+    "role": "developer",
+    "name": "Syahrul Wazalkifli",
+    "active": true
+  },
+  {
+    "id": "usr-admin",
+    "username": "Admin",
+    "password_hash": "$2a$10$udEBuYxO1m7NSLHXo84nKuXUDtWVfy4JAfC81YpVass0BZVpl7wz2",
+    "role": "admin",
+    "name": "Admin HMMJ",
+    "active": true
+  }
+]

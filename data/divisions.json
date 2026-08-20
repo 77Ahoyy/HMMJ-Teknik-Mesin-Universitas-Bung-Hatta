@@ -1,0 +1,58 @@
+[
+  {
+    "id": "div-inti",
+    "name": "Pengurus Inti",
+    "slug": "pengurus-inti",
+    "description": "Pimpinan utama organisasi HMMJ Teknik Mesin",
+    "color": "#C9A84C",
+    "order": 0
+  },
+  {
+    "id": "div-kaderisasi",
+    "name": "Divisi Kaderisasi",
+    "slug": "kaderisasi",
+    "description": "Bertanggung jawab atas pembinaan dan pengkaderan anggota baru",
+    "color": "#3B82F6",
+    "order": 1
+  },
+  {
+    "id": "div-kemahasiswaan",
+    "name": "Divisi Kemahasiswaan",
+    "slug": "kemahasiswaan",
+    "description": "Mengelola kegiatan kemahasiswaan dan hubungan dengan institusi",
+    "color": "#10B981",
+    "order": 2
+  },
+  {
+    "id": "div-minatbakat",
+    "name": "Divisi Minat Bakat",
+    "slug": "minat-bakat",
+    "description": "Mengembangkan minat, bakat, dan potensi anggota",
+    "color": "#F59E0B",
+    "order": 3
+  },
+  {
+    "id": "div-humas",
+    "name": "Divisi Humas",
+    "slug": "humas",
+    "description": "Mengelola hubungan masyarakat dan komunikasi eksternal",
+    "color": "#8B5CF6",
+    "order": 4
+  },
+  {
+    "id": "div-danus",
+    "name": "Divisi Danus",
+    "slug": "danus",
+    "description": "Dana dan usaha organisasi",
+    "color": "#EF4444",
+    "order": 5
+  },
+  {
+    "id": "div-kominfo",
+    "name": "Divisi Kominfo",
+    "slug": "kominfo",
+    "description": "Komunikasi dan informasi organisasi",
+    "color": "#06B6D4",
+    "order": 6
+  }
+]

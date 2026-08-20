@@ -1,0 +1,57 @@
+[
+  {
+    "id": "bg-hero",
+    "section": "hero",
+    "label": "Hero Background",
+    "image_url": "",
+    "overlay": 0.55,
+    "position": "center",
+    "status": "active",
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-08-16T02:24:14.235Z"
+  },
+  {
+    "id": "bg-about",
+    "section": "about",
+    "label": "About Background",
+    "image_url": "",
+    "overlay": 0.7,
+    "position": "center",
+    "status": "active",
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-08-16T02:24:44.134Z"
+  },
+  {
+    "id": "bg-contact",
+    "section": "contact",
+    "label": "Contact Background",
+    "image_url": "",
+    "overlay": 0.75,
+    "position": "center",
+    "status": "active",
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-08-15T00:00:00Z"
+  },
+  {
+    "id": "bg-news",
+    "section": "news",
+    "label": "Berita & Kegiatan Background",
+    "image_url": "",
+    "overlay": 0.8,
+    "position": "center",
+    "status": "active",
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-08-16T00:00:00Z"
+  },
+  {
+    "id": "bg-footer",
+    "section": "footer",
+    "label": "Footer Background",
+    "image_url": "",
+    "overlay": 0.85,
+    "position": "center",
+    "status": "active",
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-08-15T00:00:00Z"
+  }
+]

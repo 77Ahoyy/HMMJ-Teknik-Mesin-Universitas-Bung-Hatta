@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0A1628;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#162840;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#bg2)"/>
+  <text x="300" y="180" font-family="Inter, sans-serif" font-size="40" fill="#C9A84C" text-anchor="middle" opacity="0.25">📷</text>
+  <text x="300" y="225" font-family="Inter, sans-serif" font-size="14" fill="#6B8AAB" text-anchor="middle">Galeri HMMJ</text>
+</svg>
