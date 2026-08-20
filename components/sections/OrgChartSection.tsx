@@ -104,35 +104,15 @@ export default function OrgChartSection({ members, divisions }: OrgChartSectionP
   const [selectedDiv, setSelectedDiv] = useState<string>(nonIntiDivisions[0]?.id || 'div-kaderisasi')
   const [memberList, setMemberList] = useState<Member[]>(members)
 
-  // Fetch latest members for ALL visitors (any device, any email)
   useEffect(() => {
-    try {
-      const custom = localStorage.getItem('hmmj_custom_members')
-      if (custom) {
-        const parsed = JSON.parse(custom)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setMemberList(parsed)
-        }
-      }
-    } catch {}
-
-    fetch('/api/v1/cloud-store?type=members')
+    fetch('/api/v1/members?all=true')
       .then(r => r.json())
       .then(d => {
         if (d.members && Array.isArray(d.members) && d.members.length > 0) {
           setMemberList(d.members)
         }
       })
-      .catch(() => {
-        fetch('/api/v1/members?all=true')
-          .then(r => r.json())
-          .then(d => {
-            if (d.members && Array.isArray(d.members) && d.members.length > 0) {
-              setMemberList(d.members)
-            }
-          })
-          .catch(() => {})
-      })
+      .catch(() => {})
   }, [members])
 
   // Strictly filter only active members

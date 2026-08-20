@@ -16,21 +16,11 @@ export default function Footer({ settings }: FooterProps) {
   const [curSettings, setCurSettings] = useState<Settings>(settings)
 
   useEffect(() => {
-    let hasLocal = false
-    try {
-      const localSett = localStorage.getItem('hmmj_custom_settings')
-      if (localSett) {
-        const parsedSett = JSON.parse(localSett)
-        setCurSettings(prev => ({ ...prev, ...parsedSett }))
-        hasLocal = true
-      }
-    } catch {}
-
-    fetch('/api/v1/cloud-store?type=settings')
+    fetch('/api/v1/settings/contact')
       .then(r => r.json())
       .then(d => {
-        if (d.settings && !hasLocal) {
-          setCurSettings(prev => ({ ...prev, ...d.settings }))
+        if (d && (d.address || d.organization_name || d.copyright)) {
+          setCurSettings(prev => ({ ...prev, ...d }))
         }
       })
       .catch(() => {})

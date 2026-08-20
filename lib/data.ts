@@ -71,42 +71,32 @@ async function kvSet<T>(key: string, value: T): Promise<boolean> {
 export async function readJSON<T>(filename: string): Promise<T> {
   const key = filename.replace('.json', '')
 
-  // 1. Try KV Cloud Database FIRST (This reflects all live creations, edits, and deletions made in Dashboard!)
+  // 1. Try KV Cloud Database if configured
   const kvData = await kvGet<T>(key)
   if (kvData !== null && kvData !== undefined) {
-    memoryCache[filename] = kvData
     return kvData
   }
 
-  // 2. If key has never been set in KV (null), read bundled default seed from local file
-  let localData: T | null = null
+  // 2. Always read directly from local file on disk
   try {
     const localPath = path.join(LOCAL_DATA_DIR, filename)
     const content = await fs.readFile(localPath, 'utf-8')
-    localData = JSON.parse(content) as T
+    const parsed = JSON.parse(content) as T
+    return parsed
   } catch {
     // continue
-  }
-
-  // Auto-seed KV with localData once so it exists in cloud database
-  if (localData !== null) {
-    await kvSet(key, localData)
-    memoryCache[filename] = localData
-    return localData
   }
 
   // 3. Fallback to /tmp/data in serverless runtime
   try {
     const tmpPath = path.join(TMP_DATA_DIR, filename)
     const content = await fs.readFile(tmpPath, 'utf-8')
-    const parsed = JSON.parse(content) as T
-    memoryCache[filename] = parsed
-    return parsed
+    return JSON.parse(content) as T
   } catch {
     // continue
   }
 
-  // 4. Fallback to in-memory cache
+  // 4. Memory cache fallback
   if (memoryCache[filename]) {
     return memoryCache[filename] as T
   }
@@ -121,25 +111,21 @@ export async function writeJSON<T>(filename: string, data: T): Promise<void> {
   // 1. Sync to KV Cloud Database if configured
   await kvSet(key, data)
 
-  // 2. Try writing to local data dir (works in localhost)
-  let wroteLocal = false
+  // 2. Write to local file on disk
   try {
     const localPath = path.join(LOCAL_DATA_DIR, filename)
     await fs.writeFile(localPath, JSON.stringify(data, null, 2), 'utf-8')
-    wroteLocal = true
   } catch {
-    // Read-only filesystem on Vercel / serverless
+    // Serverless read-only filesystem fallback
   }
 
-  // 3. Write to /tmp/data (always writable on serverless cloud like Vercel/AWS)
+  // 3. Write to /tmp/data for serverless runtime
   try {
     await fs.mkdir(TMP_DATA_DIR, { recursive: true })
     const tmpPath = path.join(TMP_DATA_DIR, filename)
     await fs.writeFile(tmpPath, JSON.stringify(data, null, 2), 'utf-8')
-  } catch (err) {
-    if (!wroteLocal) {
-      console.warn(`Fallback to memory write only for ${filename}`)
-    }
+  } catch {
+    // continue
   }
 }
 
@@ -229,17 +215,8 @@ export interface User {
 }
 
 // ── Data fetchers ──
-// Global in-memory cache for serverless instance persistence
-const globalStore = globalThis as unknown as {
-  _membersCache?: Member[]
-  _settingsCache?: Settings
-}
-
 export async function getSettings(): Promise<Settings> {
-  if (globalStore._settingsCache) return globalStore._settingsCache
-  const s = await readJSON<Settings>('settings.json')
-  globalStore._settingsCache = s
-  return s
+  return readJSON<Settings>('settings.json')
 }
 
 export async function getBackgrounds(): Promise<Background[]> {
@@ -257,12 +234,7 @@ export async function getDivisions(): Promise<Division[]> {
 }
 
 export async function getMembers(): Promise<Member[]> {
-  if (globalStore._membersCache && globalStore._membersCache.length > 0) {
-    return globalStore._membersCache
-  }
-  const m = await readJSON<Member[]>('members.json')
-  globalStore._membersCache = m
-  return m
+  return readJSON<Member[]>('members.json')
 }
 
 export async function getMember(id: string): Promise<Member | null> {
@@ -291,11 +263,11 @@ function safeRevalidate(path: string) {
 export async function updateSettings(data: Partial<Settings>): Promise<Settings> {
   const current = await getSettings()
   const updated = { ...current, ...data, updated_at: new Date().toISOString() }
-  globalStore._settingsCache = updated
   await writeJSON('settings.json', updated)
   safeRevalidate('/')
   safeRevalidate('/tentang')
   safeRevalidate('/kontak')
+  safeRevalidate('/struktur')
   return updated
 }
 
@@ -307,6 +279,8 @@ export async function updateBackground(id: string, data: Partial<Background>): P
   }
   await writeJSON('backgrounds.json', bgs)
   safeRevalidate('/')
+  safeRevalidate('/tentang')
+  safeRevalidate('/kontak')
   return bgs
 }
 
@@ -318,7 +292,6 @@ export async function upsertMember(member: Member): Promise<Member[]> {
   } else {
     members.push(member)
   }
-  globalStore._membersCache = members
   await writeJSON('members.json', members)
   safeRevalidate('/struktur')
   safeRevalidate(`/pengurus/${member.id}`)
@@ -329,7 +302,6 @@ export async function upsertMember(member: Member): Promise<Member[]> {
 export async function deleteMember(id: string): Promise<Member[]> {
   const members = await getMembers()
   const updated = members.filter(m => m.id !== id)
-  globalStore._membersCache = updated
   await writeJSON('members.json', updated)
   safeRevalidate('/struktur')
   safeRevalidate(`/pengurus/${id}`)

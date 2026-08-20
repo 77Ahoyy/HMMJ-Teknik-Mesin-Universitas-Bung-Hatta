@@ -60,20 +60,6 @@ export default function ContactSettingsPage() {
     setSaving(true)
     setMsg('')
 
-    // 1. Immediately update localStorage and Cloud Store for instant cross-device broadcast
-    try {
-      const local = localStorage.getItem('hmmj_custom_settings')
-      const existing = local ? JSON.parse(local) : {}
-      const updatedLocal = { ...existing, ...form }
-      localStorage.setItem('hmmj_custom_settings', JSON.stringify(updatedLocal))
-      fetch('/api/v1/cloud-store', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'settings', data: updatedLocal }),
-      }).catch(() => {})
-    } catch {}
-
-    // 2. Sync to server in background
     try {
       const res = await fetch('/api/v1/settings/contact', {
         method: 'PUT',
@@ -82,16 +68,29 @@ export default function ContactSettingsPage() {
       })
       const data = await res.json()
 
-      if (data.success || data.settings) {
+      if (data.success && data.settings) {
+        setForm({
+          address: data.settings.address || '',
+          email: data.settings.email || '',
+          phone: data.settings.phone || '',
+          whatsapp: data.settings.whatsapp || '',
+          instagram_hmmj: data.settings.instagram_hmmj || '',
+          instagram_hmmj_url: data.settings.instagram_hmmj_url || '',
+          maps_url: data.settings.maps_url || '',
+          maps_embed_url: data.settings.maps_embed_url || '',
+        })
+        try {
+          localStorage.setItem('hmmj_custom_settings', JSON.stringify(data.settings))
+        } catch {}
         setIsSuccess(true)
         setMsg('✅ Pengaturan kontak dan email berhasil disimpan!')
       } else {
-        setIsSuccess(true)
-        setMsg('✅ Pengaturan kontak dan email berhasil disimpan di browser!')
+        setIsSuccess(false)
+        setMsg('❌ ' + (data.error || 'Gagal menyimpan'))
       }
     } catch {
-      setIsSuccess(true)
-      setMsg('✅ Pengaturan kontak tersimpan!')
+      setIsSuccess(false)
+      setMsg('❌ Gagal menghubungi server')
     }
 
     setSaving(false)

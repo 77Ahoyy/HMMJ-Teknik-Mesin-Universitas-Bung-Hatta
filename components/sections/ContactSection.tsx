@@ -15,23 +15,15 @@ export default function ContactSection({ settings, background }: ContactSectionP
   const [curSettings, setCurSettings] = useState<Settings>(settings)
 
   useEffect(() => {
-    try {
-      const local = localStorage.getItem('hmmj_custom_backgrounds')
-      if (local) {
-        const parsed = JSON.parse(local)
-        if (Array.isArray(parsed)) {
-          const found = parsed.find((b: Background) => b.section === 'contact')
-          if (found) setCurrentBg(found)
+    fetch('/api/v1/settings/contact')
+      .then(r => r.json())
+      .then(d => {
+        if (d && (d.address || d.organization_name)) {
+          setCurSettings(prev => ({ ...prev, ...d }))
         }
-      }
-
-      const localSett = localStorage.getItem('hmmj_custom_settings')
-      if (localSett) {
-        const parsedSett = JSON.parse(localSett)
-        setCurSettings(prev => ({ ...prev, ...parsedSett }))
-      }
-    } catch {}
-  }, [background, settings])
+      })
+      .catch(() => {})
+  }, [settings])
 
   const bgUrl = currentBg?.image_url || ''
   const overlay = currentBg?.overlay ?? 0.75

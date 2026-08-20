@@ -206,25 +206,30 @@ export default function MembersAdminPage() {
   async function toggleActive(m: Member) {
     const nextStatus = !m.active
     const updated = { ...m, active: nextStatus }
-    
-    // 1. Immediately update client list & localStorage (Never loses previous changes)
-    const updatedList = members.map(item => item.id === m.id ? updated : item)
-    updateLocalAndState(updatedList)
 
-    if (nextStatus) {
-      showToast(`✅ ${m.name} diaktifkan! Foto & profil kembali muncul di struktur.`)
-    } else {
-      showToast(`⚠️ ${m.name} dinonaktifkan! Foto & profil disembunyikan dari struktur.`)
-    }
-
-    // 2. Sync to server in background
     try {
-      await fetch('/api/v1/members', {
+      const res = await fetch('/api/v1/members', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updated),
       })
-    } catch {}
+      const data = await res.json()
+      if (data.success && data.members) {
+        setMembers(data.members)
+        try {
+          localStorage.setItem('hmmj_custom_members', JSON.stringify(data.members))
+        } catch {}
+        if (nextStatus) {
+          showToast(`✅ ${m.name} diaktifkan! Foto & profil kembali muncul di struktur.`)
+        } else {
+          showToast(`⚠️ ${m.name} dinonaktifkan! Foto & profil disembunyikan dari struktur.`)
+        }
+      } else {
+        showToast('❌ ' + (data.error || 'Gagal mengubah status'), false)
+      }
+    } catch {
+      showToast('❌ Gagal menghubungi server', false)
+    }
   }
 
   async function handleSave() {
@@ -233,52 +238,60 @@ export default function MembersAdminPage() {
       ? { ...(form as Member), id: selected!.id }
       : { ...(form as Member), id: `mbr-${Date.now().toString(36)}` }
 
-    // 1. Immediately merge into existing members array & save to localStorage
-    const updatedList = modal === 'edit'
-      ? members.map(m => m.id === payload.id ? payload : m)
-      : [...members, payload]
-    
-    updateLocalAndState(updatedList)
-
-    showToast(
-      modal === 'edit'
-        ? '✅ Data & foto pengurus berhasil diperbarui!'
-        : '✅ Pengurus baru berhasil ditambahkan!'
-    )
-    closeModal()
-
-    // 2. Sync to server in background
     try {
-      await fetch('/api/v1/members', {
+      const res = await fetch('/api/v1/members', {
         method: modal === 'edit' ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-    } catch {}
-
-    setSaving(false)
+      const data = await res.json()
+      if (data.success && data.members) {
+        setMembers(data.members)
+        try {
+          localStorage.setItem('hmmj_custom_members', JSON.stringify(data.members))
+        } catch {}
+        showToast(
+          modal === 'edit'
+            ? '✅ Data & foto pengurus berhasil diperbarui!'
+            : '✅ Pengurus baru berhasil ditambahkan!'
+        )
+        closeModal()
+      } else {
+        showToast('❌ ' + (data.error || 'Gagal menyimpan data'), false)
+      }
+    } catch {
+      showToast('❌ Gagal menghubungi server', false)
+    } finally {
+      setSaving(false)
+    }
   }
 
   async function handleDelete() {
     setSaving(true)
     const idToDelete = selected!.id
-    
-    // 1. Immediately remove from client state & localStorage
-    const updatedList = members.filter(m => m.id !== idToDelete)
-    updateLocalAndState(updatedList)
-    showToast('✅ Pengurus berhasil dihapus!')
-    closeModal()
 
-    // 2. Sync to server in background
     try {
-      await fetch('/api/v1/members', {
+      const res = await fetch('/api/v1/members', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: idToDelete }),
       })
-    } catch {}
-
-    setSaving(false)
+      const data = await res.json()
+      if (data.success && data.members) {
+        setMembers(data.members)
+        try {
+          localStorage.setItem('hmmj_custom_members', JSON.stringify(data.members))
+        } catch {}
+        showToast('✅ Pengurus berhasil dihapus!')
+        closeModal()
+      } else {
+        showToast('❌ ' + (data.error || 'Gagal menghapus'), false)
+      }
+    } catch {
+      showToast('❌ Gagal menghubungi server', false)
+    } finally {
+      setSaving(false)
+    }
   }
 
   const activeMembersCount = members.filter(m => m.active !== false).length
