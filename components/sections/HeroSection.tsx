@@ -34,25 +34,39 @@ export default function HeroSection({ settings, background }: HeroSectionProps) 
   const overlay = currentBg?.overlay ?? 0.55
   const position = currentBg?.position || 'center'
 
+  const [memberCount, setMemberCount] = useState(28)
+
+  useEffect(() => {
+    fetch('/api/v1/members?all=false')
+      .then(r => r.json())
+      .then(d => {
+        if (d && typeof d.total === 'number' && d.total > 0) {
+          setMemberCount(d.total)
+        }
+      })
+      .catch(() => {})
+  }, [])
+
   return (
     <section className={styles.hero} id="beranda">
-      {/* Background */}
-      {bgUrl ? (
-        <img
-          src={bgUrl}
-          alt="Hero Background"
-          className={styles.bgImage}
-          style={{ objectPosition: position, width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
-        />
-      ) : (
-        <div className={styles.bgDefault} />
+      {bgUrl && (
+        <>
+          <img
+            src={bgUrl}
+            alt="Hero Background"
+            className={styles.bgImage}
+            style={{ objectPosition: position, width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
+          />
+          <div
+            className={styles.overlay}
+            style={{ background: `rgba(17,3,5,${overlay})` }}
+          />
+        </>
       )}
 
-      {/* Overlay */}
-      <div
-        className={styles.overlay}
-        style={{ background: `rgba(10, 22, 40, ${overlay})` }}
-      />
+      {/* Background glow effects */}
+      <div className={styles.glowTop} />
+      <div className={styles.glowBottom} />
 
       {/* Animated particles */}
       <div className={styles.particles}>
@@ -63,19 +77,21 @@ export default function HeroSection({ settings, background }: HeroSectionProps) 
 
       {/* Content */}
       <div className={`container ${styles.content}`}>
-        <div className={styles.logoWrap}>
-          <div className={styles.logoGroup}>
-            <div className={styles.logoCard} title="HMMJ Teknik Mesin">
+        <div className={styles.heroLogosGroup}>
+          <div className={styles.heroLogoCard} title="Logo Utama HMMJTM Teknik Mesin">
+            <div className={styles.logoFrame}>
               <Image
                 src="/images/logo-hmmj.png"
-                alt="Logo HMMJ Teknik Mesin"
+                alt="Logo HMMJTM Teknik Mesin"
                 width={80}
                 height={80}
                 className={styles.heroLogo}
                 priority
               />
             </div>
-            <div className={styles.logoCard} title="Solidarity M Forever">
+          </div>
+          <div className={styles.heroLogoCard} title="Solidarity M Forever">
+            <div className={styles.logoFrame}>
               <Image
                 src="/images/logo-msolver.png"
                 alt="Logo Solidarity M Forever"
@@ -85,7 +101,9 @@ export default function HeroSection({ settings, background }: HeroSectionProps) 
                 priority
               />
             </div>
-            <div className={styles.logoCard} title="Universitas Bung Hatta">
+          </div>
+          <div className={styles.heroLogoCard} title="Universitas Bung Hatta">
+            <div className={styles.logoFrame}>
               <Image
                 src="/images/logo-ubh.png"
                 alt="Logo Universitas Bung Hatta"
@@ -131,8 +149,8 @@ export default function HeroSection({ settings, background }: HeroSectionProps) 
         {/* Stats */}
         <div className={styles.stats}>
           <div className={styles.statItem}>
-            <span className={styles.statNum}>28+</span>
-            <span className={styles.statLabel}>Pengurus</span>
+            <span className={styles.statNum}>{memberCount}</span>
+            <span className={styles.statLabel}>Pengurus Aktif</span>
           </div>
           <div className={styles.statDivider} />
           <div className={styles.statItem}>

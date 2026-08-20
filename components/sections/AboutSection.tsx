@@ -11,6 +11,19 @@ interface AboutSectionProps {
 
 export default function AboutSection({ settings, background }: AboutSectionProps) {
   const [currentBg, setCurrentBg] = useState<Background | undefined>(background)
+  const [curSettings, setCurSettings] = useState<Settings>(settings)
+
+  useEffect(() => {
+    // Fetch live settings directly from server API
+    fetch('/api/v1/settings/general')
+      .then(r => r.json())
+      .then(d => {
+        if (d && (d.about_title || d.about_description_1 || d.organization_name)) {
+          setCurSettings(prev => ({ ...prev, ...d }))
+        }
+      })
+      .catch(() => {})
+  }, [settings])
 
   useEffect(() => {
     try {
@@ -32,8 +45,13 @@ export default function AboutSection({ settings, background }: AboutSectionProps
   const bgUrl = currentBg?.image_url || ''
   const overlay = currentBg?.overlay ?? 0.7
 
-  const vision = settings.about_vision || 'Menjadi himpunan mahasiswa jurusan yang unggul, profesional, dan berintegritas tinggi dalam mencetak mahasiswa Teknik Mesin yang berdaya saing nasional maupun internasional.'
-  const mission = settings.about_mission || `1. Membangun solidaritas dan kekeluargaan yang erat antar sesama mahasiswa Teknik Mesin.\n2. Mengembangkan potensi kepemimpinan, riset teknologi, dan soft skill anggota.\n3. Menjalin kerja sama yang harmonis dengan institusi, alumni, dan industri.`
+  const vision = curSettings.about_vision && curSettings.about_vision !== '-'
+    ? curSettings.about_vision
+    : 'Menjadi himpunan mahasiswa jurusan yang unggul, profesional, berdaya saing global, dan berintegritas tinggi dengan berlandaskan semangat Solidarity Forever dan nilai-nilai luhur Bung Hatta.'
+
+  const mission = curSettings.about_mission && curSettings.about_mission !== '-'
+    ? curSettings.about_mission
+    : `1. Mempererat tali persaudaraan dan solidaritas antar sesama mahasiswa Teknik Mesin.\n2. Mengembangkan kompetensi riset, kepemimpinan, dan teknologi mekanika.\n3. Menjalin kemitraan sinergis dengan alumni, institusi, dan dunia industri.`
 
   const missionItems = mission
     .split('\n')
@@ -96,44 +114,44 @@ export default function AboutSection({ settings, background }: AboutSectionProps
             <div className={styles.infoBox}>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>Organisasi</span>
-                <span className={styles.infoValue}>{settings.full_organization_name}</span>
+                <span className={styles.infoValue}>{curSettings.full_organization_name}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>Fakultas</span>
-                <span className={styles.infoValue}>{settings.faculty}</span>
+                <span className={styles.infoValue}>{curSettings.faculty}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>Universitas</span>
-                <span className={styles.infoValue}>{settings.university}</span>
+                <span className={styles.infoValue}>{curSettings.university}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>Periode</span>
-                <span className={`${styles.infoValue} ${styles.periodValue}`}>{settings.period}</span>
+                <span className={`${styles.infoValue} ${styles.periodValue}`}>{curSettings.period}</span>
               </div>
             </div>
           </div>
 
           {/* Right Column: Descriptions & Pillars */}
           <div className={styles.right}>
-            <span className="section-tag">{settings.about_subtitle || 'Tentang Kami'}</span>
+            <span className="section-tag">{curSettings.about_subtitle || 'Tentang Kami'}</span>
             <h2 className="section-title" style={{ textAlign: 'left', whiteSpace: 'pre-line' }}>
-              {settings.about_title || 'Mengenal \nHMMJTM Teknik Mesin'}
+              {curSettings.about_title || 'Mengenal \nHMMJTM Teknik Mesin'}
             </h2>
             <div className="divider divider-left" />
 
-            {settings.about_description_1 && (
-              <p className={styles.desc}>{settings.about_description_1}</p>
+            {curSettings.about_description_1 && curSettings.about_description_1 !== '-' && (
+              <p className={styles.desc}>{curSettings.about_description_1}</p>
             )}
-            {settings.about_description_2 && (
-              <p className={styles.desc}>{settings.about_description_2}</p>
+            {curSettings.about_description_2 && curSettings.about_description_2 !== '-' && (
+              <p className={styles.desc}>{curSettings.about_description_2}</p>
             )}
-            {settings.about_description_3 && (
-              <p className={styles.desc}>{settings.about_description_3}</p>
+            {curSettings.about_description_3 && curSettings.about_description_3 !== '-' && (
+              <p className={styles.desc}>{curSettings.about_description_3}</p>
             )}
 
-            {(settings.about_pillars && settings.about_pillars.length > 0) ? (
+            {(curSettings.about_pillars && Array.isArray(curSettings.about_pillars) && curSettings.about_pillars.filter(p => p && p !== '-').length > 0) ? (
               <div className={styles.pillGroup}>
-                {settings.about_pillars.map(p => (
+                {curSettings.about_pillars.filter(p => p && p !== '-').map(p => (
                   <span key={p} className={styles.pill}>{p}</span>
                 ))}
               </div>
@@ -158,38 +176,35 @@ export default function AboutSection({ settings, background }: AboutSectionProps
           </div>
 
           <div className={styles.vmGrid}>
-            {/* CARD 1: VISI */}
-            <div className={`${styles.vmCard} ${styles.visionCard}`}>
-              <div className={styles.vmCardHeader}>
-                <div className={styles.vmIconBadge}>🎯</div>
-                <div>
-                  <span className={styles.vmTag}>Visi Organisasi</span>
-                  <h4 className={styles.vmCardTitle}>VISI</h4>
-                </div>
+            {/* Vision Card */}
+            <div className={styles.vmCard}>
+              <div className={styles.vmIconWrap}>
+                <span className={styles.vmIcon}>🎯</span>
               </div>
-              <div className={styles.visionBody}>
-                <div className={styles.quoteMark}>“</div>
-                <p className={styles.visionText}>{vision}</p>
+              <div className={styles.vmContent}>
+                <span className={styles.vmBadge}>Visi Utama</span>
+                <h4 className={styles.vmHeading}>Visi Organisasi</h4>
+                <p className={styles.vmBodyText}>{vision}</p>
               </div>
             </div>
 
-            {/* CARD 2: MISI */}
-            <div className={`${styles.vmCard} ${styles.missionCard}`}>
-              <div className={styles.vmCardHeader}>
-                <div className={styles.vmIconBadge}>🚀</div>
-                <div>
-                  <span className={styles.vmTag}>Misi Pelaksanaan</span>
-                  <h4 className={styles.vmCardTitle}>MISI</h4>
-                </div>
+            {/* Mission Card */}
+            <div className={styles.vmCard}>
+              <div className={styles.vmIconWrap}>
+                <span className={styles.vmIcon}>🚀</span>
               </div>
-              <ul className={styles.missionList}>
-                {missionItems.map((item, idx) => (
-                  <li key={idx} className={styles.missionItem}>
-                    <span className={styles.missionNum}>{idx + 1}</span>
-                    <span className={styles.missionText}>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className={styles.vmContent}>
+                <span className={styles.vmBadge}>Misi Strategis</span>
+                <h4 className={styles.vmHeading}>Misi Kepengurusan</h4>
+                <ul className={styles.vmList}>
+                  {missionItems.map((item, idx) => (
+                    <li key={idx} className={styles.vmListItem}>
+                      <span className={styles.vmItemNumber}>{idx + 1}</span>
+                      <span className={styles.vmItemText}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>

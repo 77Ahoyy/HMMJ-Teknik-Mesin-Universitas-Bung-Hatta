@@ -116,21 +116,22 @@ export default function OrgChartSection({ members, divisions }: OrgChartSectionP
   }, [members])
 
   // Strictly filter only active members
-  const activeMembers = memberList.filter(m => Boolean(m.active) && m.active !== false)
+  const activeMembers = memberList.filter(m => m.active !== false)
 
   const inti = activeMembers.filter(m => m.division_id === 'div-inti')
   const ketua = inti.find(m => m.role === 'ketua')
   const wakil = inti.find(m => m.role === 'wakil')
   const sek = inti.find(m => m.role === 'sekretaris')
   const bendahara = inti.find(m => m.role === 'bendahara')
+  const otherInti = inti.filter(m => m.role !== 'ketua' && m.role !== 'wakil' && m.role !== 'sekretaris' && m.role !== 'bendahara')
 
   // Currently active single division
   const currentDivision = nonIntiDivisions.find(d => d.id === selectedDiv) || nonIntiDivisions[0]
   const koordinator = currentDivision ? activeMembers.find(
-    m => m.division_id === currentDivision.id && m.role === 'koordinator'
+    m => m.division_id === currentDivision.id && (m.role === 'koordinator' || m.jabatan.toLowerCase().includes('koordinator'))
   ) : null
   const anggota = currentDivision ? activeMembers.filter(
-    m => m.division_id === currentDivision.id && m.role === 'anggota'
+    m => m.division_id === currentDivision.id && m.id !== koordinator?.id
   ) : []
 
   return (
@@ -141,7 +142,7 @@ export default function OrgChartSection({ members, divisions }: OrgChartSectionP
           <span className="section-tag">Struktur Organisasi</span>
           <h2 className="section-title">Bagan Kepengurusan HMMJTM</h2>
           <p className="section-subtitle">
-            Himpunan Masyarakat Mahasiswa Jurusan Teknik Mesin Periode 2026/2027
+            Himpunan Masyarakat Mahasiswa Jurusan Teknik Mesin Periode 2026/2027 ({activeMembers.length} Personil Aktif)
           </p>
           <div className="divider" />
         </div>
@@ -184,6 +185,20 @@ export default function OrgChartSection({ members, divisions }: OrgChartSectionP
                   {bendahara && <OrgProfileCard member={bendahara} />}
                 </div>
               </>
+            )}
+
+            {/* Additional Inti Members if any */}
+            {otherInti.length > 0 && (
+              <div style={{ marginTop: '2.5rem', width: '100%' }}>
+                <div style={{ textAlign: 'center', marginBottom: '1.25rem', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  👥 Anggota & Staf Pengurus Inti ({otherInti.length})
+                </div>
+                <div className={styles.anggotaCardsGrid}>
+                  {otherInti.map(m => (
+                    <OrgProfileCard key={m.id} member={m} />
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -244,7 +259,7 @@ export default function OrgChartSection({ members, divisions }: OrgChartSectionP
                   <div>
                     <div className={styles.divTitleRow}>
                       <h3 className={styles.divTitle}>{currentDivision.name}</h3>
-                      <span className={styles.divTagInline}>HMMJ 2026/2027</span>
+                      <span className={styles.divTagInline}>HMMJTM 2026/2027</span>
                     </div>
                     <p className={styles.divSubtitle}>{currentDivision.description}</p>
                   </div>
